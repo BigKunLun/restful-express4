@@ -10,18 +10,46 @@ var users = require('./routes/users');
 
 var app = express();
 
+function logErrors(err, req, res, next) {
+  console.error(err.stack);
+  next(err);
+}
+
+function clientErrorHandler(err, req, res, next) {
+  if (req.xhr) {
+    res.status(500).send({ error: 'Something blew up!' });
+  } else {
+    next(err);
+  }
+}
+
+function errorHandler(err, req, res, next) {
+  res.status(500);
+  res.render('error', { error: err });
+}
+
+app.use(bodyParser());
+app.use(logErrors);
+app.use(clientErrorHandler);
+app.use(errorHandler);
+
+
 app.get('/', function (req, res) {
   res.send('Hello World!')
-})
+});
+
+app.get('/user',function(req,res){
+  res.send({
+    name: 'shijn',
+    age: 24
+  })
+});
 
 var server = app.listen(3000, function () {
-
   var host = server.address().address
   var port = server.address().port
-
   console.log('Example app listening at http://%s:%s', host, port)
-
-})
+});
 
 // // view engine setup
 // app.set('views', path.join(__dirname, 'views'));
