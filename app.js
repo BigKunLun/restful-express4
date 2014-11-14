@@ -1,101 +1,93 @@
+// Base Setup
+// ====================================================================================================
+
+// call the package we need
 var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-
-var routes = require('./routes/index');
-var users = require('./routes/users');
-
 var app = express();
+var bodyParser = require('body-parser');
+var _ = require('underscore');
 
-function logErrors(err, req, res, next) {
-  console.error(err.stack);
-  next(err);
-}
+// configure app to use middleware bodyParser()
+// let us get the data from a POST
+app.use(bodyParser.urlencoded({extend:true}));
+app.use(bodyParser.json());
 
-function clientErrorHandler(err, req, res, next) {
-  if (req.xhr) {
-    res.status(500).send({ error: 'Something blew up!' });
-  } else {
-    next(err);
+// set our port
+var port = process.env.PORT || 8888;
+
+// base route for API
+// ====================================================================================================
+var router = express.Router();
+
+// middleware to use for all request
+router.use(function(req,res,next){
+  console.log('Some Request is happening.');
+  next();
+});
+
+// base api route with "http://localhost:8888/api"
+router.get('/',function(req,res){
+  res.json({ message: 'welcome to nodejs API' });
+});
+
+// the route demo with user resource
+// ====================================================================================================
+var users = [
+  {
+    user_id: 1,
+    user_name: 'shijn1'
+  },{
+    user_id: 2,
+    user_name: 'shijn2'
+  },{
+    user_id: 3,
+    user_name: 'shijn3'
+  },{
+    user_id: 4,
+    user_name: 'shijn4'
   }
+];
+
+function findUserById(user_id){
+  return _.find(users,function(user){
+    return user.user_id == user_id;
+  });
 }
 
-function errorHandler(err, req, res, next) {
-  res.status(500);
-  res.render('error', { error: err });
-}
-
-app.use(bodyParser());
-app.use(logErrors);
-app.use(clientErrorHandler);
-app.use(errorHandler);
-
-
-app.get('/', function (req, res) {
-  res.send('Hello World!')
-});
-
-app.get('/user',function(req,res){
-  res.send({
-    name: 'shijn',
-    age: 24
+router.route('/users')
+  .get(function(req,res){
+    res.json(users);
   })
-});
+  .post(function(req,res){
+    var user = {
+      user_id: users.length+1,
+      user_name: req.body.user_name
+    };
+    users.push(user);
+    res.json({ message: 'user create!' });
+  });
 
-var server = app.listen(3000, function () {
-  var host = server.address().address
-  var port = server.address().port
-  console.log('Example app listening at http://%s:%s', host, port)
-});
+router.route('/users/:user_id')
+  .get(function(req,res){
+    res.json(findUserById(req.params.user_id));
+  })
+  .put(function(req,res){
+    var user = findUserById(req.params.user_id);
+    user.name = req.body.user_name;
+    res.json({ message: 'user update!' });
+  })
+  .delete(function(req,res){
+    var user = findUserById(req.params.user_id);
+    users.splice(_.indexOf(users,user));
+    res.json({ message: 'user delete'});
+  });
 
-// // view engine setup
-// app.set('views', path.join(__dirname, 'views'));
-// app.set('view engine', 'jade');
+// more routes API can be here
 
-// // uncomment after placing your favicon in /public
-// //app.use(favicon(__dirname + '/public/favicon.ico'));
-// app.use(logger('dev'));
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: false }));
-// app.use(cookieParser());
-// app.use(express.static(path.join(__dirname, 'public')));
+// register API route that all of routes will be prefixed with '/api'
+app.use('/api',router);
 
-// app.use('/', routes);
-// app.use('/users', users);
-
-// // catch 404 and forward to error handler
-// app.use(function(req, res, next) {
-//     var err = new Error('Not Found');
-//     err.status = 404;
-//     next(err);
-// });
-
-// // error handlers
-
-// // development error handler
-// // will print stacktrace
-// if (app.get('env') === 'development') {
-//     app.use(function(err, req, res, next) {
-//         res.status(err.status || 500);
-//         res.render('error', {
-//             message: err.message,
-//             error: err
-//         });
-//     });
-// }
-
-// // production error handler
-// // no stacktraces leaked to user
-// app.use(function(err, req, res, next) {
-//     res.status(err.status || 500);
-//     res.render('error', {
-//         message: err.message,
-//         error: {}
-//     });
-// });
-
-
-// module.exports = app;
+// start the api server
+// ====================================================================================================
+app.listen(port);
+console.log('server start on port ' + port);
