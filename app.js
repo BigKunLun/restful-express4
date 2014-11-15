@@ -6,9 +6,9 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 
-// get the modules routes
-var users = require('./modules/users');
-var gifts = require('./modules/gifts');
+// get the routes routes
+var users = require('./routes/users');
+var gifts = require('./routes/gifts');
 
 // configure app to use middleware bodyParser()
 // let us get the data from a POST

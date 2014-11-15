@@ -22,6 +22,8 @@ var gifts = [
 
 router.route('/gifts')
   .get(function(req,res){
+    // res.statusCode = 500;
+    // res.json('Error 400: products properties missing');
     res.json(gifts);
   });
 
