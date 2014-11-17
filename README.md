@@ -1,4 +1,5 @@
-angular-express
+#restful-express4
+
 ===============
 
-restful server with express
+Build simple restful server with express4.
