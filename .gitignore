@@ -23,3 +23,8 @@ node_modules
 
 # Users Environment Variables
 .lock-wscript
+
+.DS_Store
+npm-debug.log
+node_modules/
+.bower-*/
