@@ -2,19 +2,19 @@
 
 var users = [
   {
-    name: 'shjin1',
+    name: 'Person1',
     age: 1
   },{
-    name: 'shjin2',
+    name: 'Person1',
     age: 2
   },{
-    name: 'shjin3',
+    name: 'Person3',
     age: 3
   },{
-    name: 'shjin4',
+    name: 'Person4',
     age: 4
   },{
-    name: 'shjin5',
+    name: 'Person5',
     age: 5
   }
 ]
